@@ -2,7 +2,9 @@ package consumer
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/segmentio/kafka-go"
+	"goKafka/domain"
 	"log"
 )
 
@@ -23,6 +25,14 @@ func (cl KafkaConsumerClient) HandleMessages() {
 		}
 
 		log.Printf("Received message: topic = %v; key=%v; value=%v", m.Topic, m.Key, m.Value)
+
+		user := domain.User{}
+		if err := json.Unmarshal(m.Value, &user); err != nil {
+			log.Println("Error parsing Value as User. Skipping...")
+			continue
+		}
+
+		log.Printf("Handling User ID = %v", user.ID)
 
 	}
 }
